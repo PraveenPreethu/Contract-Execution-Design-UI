@@ -67,9 +67,14 @@ export class ContractBladeComponent implements OnInit {
     }
   }
 
+  private generateId(prefix: string): string {
+    const ts = Date.now().toString().slice(-7);
+    return `${prefix}-${ts}`;
+  }
+
   buildForm(): void {
     this.form = this.fb.group({
-      contractId:     [{ value: null, disabled: this.mode === 'edit' }],
+      contractId:     [{ value: this.mode === 'create' ? this.generateId('CTR') : null, disabled: this.mode === 'edit' }],
       customerId:     [null, [Validators.required, Validators.maxLength(50)]],
       commodityCode:  [null, Validators.required],
       contractStatus: [null, Validators.required],

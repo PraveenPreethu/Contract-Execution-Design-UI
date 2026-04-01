@@ -64,9 +64,14 @@ export class PricingCcFinancialBladeComponent implements OnInit {
     if (this.mode === 'edit' && this.pricingId) { this.loadPricing(); this.loadDetails(); }
   }
 
+  private generateId(prefix: string): string {
+    const ts = Date.now().toString().slice(-7);
+    return `${prefix}-${ts}`;
+  }
+
   buildForm(): void {
     this.form = this.fb.group({
-      pricingId:     [{ value: null, disabled: this.mode === 'edit' }],
+      pricingId:     [{ value: this.mode === 'create' ? this.generateId('PRF') : null, disabled: this.mode === 'edit' }],
       contractId:    [{ value: this.contractId || null, disabled: true }],
       commitmentId:  [{ value: this.commitmentId || null, disabled: true }],
       bundleId:      [null],
