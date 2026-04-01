@@ -1,0 +1,103 @@
+<div class="blade-body">
+  @if (loading()) { <div class="blade-loading"><mat-spinner diameter="36"></mat-spinner></div> }
+
+  <div class="form-wrapper">
+    <form [formGroup]="form" class="blade-form">
+      <div class="context-row">
+        @if (contractId) { <span class="ctx-chip"><mat-icon>description</mat-icon>{{ contractId }}</span> }
+        @if (pricingId)  { <span class="ctx-chip"><mat-icon>attach_money</mat-icon>{{ pricingId }}</span> }
+      </div>
+
+      <div class="section-label">Bin Period</div>
+      <div class="form-row">
+        <mat-form-field appearance="fill">
+          <mat-label>Pricing Date *</mat-label>
+          <input matInput [matDatepicker]="pd3" formControlName="pricingDate">
+          <mat-datepicker-toggle matSuffix [for]="pd3"></mat-datepicker-toggle>
+          <mat-datepicker #pd3></mat-datepicker>
+          @if (isInvalid('pricingDate')) { <mat-error>Required</mat-error> }
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>As-Of Date *</mat-label>
+          <input matInput [matDatepicker]="ao3" formControlName="asOfDate">
+          <mat-datepicker-toggle matSuffix [for]="ao3"></mat-datepicker-toggle>
+          <mat-datepicker #ao3></mat-datepicker>
+          @if (isInvalid('asOfDate')) { <mat-error>Required</mat-error> }
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <mat-form-field appearance="fill">
+          <mat-label>Bin Start *</mat-label>
+          <input matInput [matDatepicker]="bs3" formControlName="binStart">
+          <mat-datepicker-toggle matSuffix [for]="bs3"></mat-datepicker-toggle>
+          <mat-datepicker #bs3></mat-datepicker>
+          @if (isInvalid('binStart')) { <mat-error>Required</mat-error> }
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Bin End *</mat-label>
+          <input matInput [matDatepicker]="be3" formControlName="binEnd">
+          <mat-datepicker-toggle matSuffix [for]="be3"></mat-datepicker-toggle>
+          <mat-datepicker #be3></mat-datepicker>
+          @if (isInvalid('binEnd')) { <mat-error>Required</mat-error> }
+        </mat-form-field>
+      </div>
+
+      <div class="section-label">Pricing</div>
+      <div class="form-row">
+        <mat-form-field appearance="fill">
+          <mat-label>Product *</mat-label>
+          <mat-select formControlName="productCode">
+            @for (p of products(); track p.productCode) { <mat-option [value]="p.productCode">{{ p.productName }}</mat-option> }
+          </mat-select>
+          @if (isInvalid('productCode')) { <mat-error>Required</mat-error> }
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Fixed / Float *</mat-label>
+          <mat-select formControlName="fixedFloat">
+            @for (f of fixedFloats(); track f.fixedFloatCode) { <mat-option [value]="f.fixedFloatCode">{{ f.description }}</mat-option> }
+          </mat-select>
+          @if (isInvalid('fixedFloat')) { <mat-error>Required</mat-error> }
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <mat-form-field appearance="fill">
+          <mat-label>Price *</mat-label>
+          <input matInput type="number" formControlName="price" step="0.0001">
+          <mat-icon matSuffix>paid</mat-icon>
+          @if (isInvalid('price')) { <mat-error>Required</mat-error> }
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Run ID</mat-label>
+          <input matInput formControlName="runId">
+        </mat-form-field>
+      </div>
+
+      <div class="section-label">Delta Calculation</div>
+      <div class="form-row-3">
+        <mat-form-field appearance="fill">
+          <mat-label>Curve Bumped *</mat-label>
+          <input matInput formControlName="curveBumped" placeholder="Curve name">
+          @if (isInvalid('curveBumped')) { <mat-error>Required</mat-error> }
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Bumped Price *</mat-label>
+          <input matInput type="number" formControlName="bumpedPrice" step="0.0001">
+          @if (isInvalid('bumpedPrice')) { <mat-error>Required</mat-error> }
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Delta *</mat-label>
+          <input matInput type="number" formControlName="delta" step="0.000001">
+          @if (isInvalid('delta')) { <mat-error>Required</mat-error> }
+        </mat-form-field>
+      </div>
+    </form>
+
+    <div class="blade-actions">
+      <button mat-stroked-button (click)="form.reset()" [disabled]="saving()"><mat-icon>undo</mat-icon> Reset</button>
+      <button mat-flat-button color="primary" (click)="save()" [disabled]="saving()">
+        @if (saving()) { <mat-spinner diameter="16"></mat-spinner> } @else { <mat-icon>save</mat-icon> }
+        {{ mode === 'create' ? 'Create Delta' : 'Save Changes' }}
+      </button>
+    </div>
+  </div>
+</div>

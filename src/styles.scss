@@ -1,0 +1,160 @@
+@use '@angular/material' as mat;
+
+// ─── Custom Palette ────────────────────────────────────────────────────────────
+$teal-palette: (
+  50: #e0f4f7, 100: #b3e3ec, 200: #80cfdf, 300: #4dbbd2,
+  400: #26adc9, 500: #0099bf, 600: #008aad, 700: #007795,
+  800: #00657e, 900: #004657,
+  contrast: (50: rgba(0,0,0,.87), 100: rgba(0,0,0,.87), 200: rgba(0,0,0,.87),
+    300: rgba(0,0,0,.87), 400: rgba(0,0,0,.87),
+    500: white, 600: white, 700: white, 800: white, 900: white)
+);
+
+@include mat.core();
+
+$primary: mat.m2-define-palette($teal-palette, 700, 400, 900);
+$accent:  mat.m2-define-palette(mat.$m2-cyan-palette, A200, A100, A400);
+$warn:    mat.m2-define-palette(mat.$m2-red-palette);
+
+$theme: mat.m2-define-dark-theme((
+  color: (primary: $primary, accent: $accent, warn: $warn),
+  typography: mat.m2-define-typography-config($font-family: "'Inter', 'Segoe UI', sans-serif"),
+  density: 0
+));
+
+@include mat.all-component-themes($theme);
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+// ─── CSS Variables ─────────────────────────────────────────────────────────────
+:root {
+  --bg-base:       #0b1826;
+  --bg-surface:    #0f2035;
+  --bg-card:       #142840;
+  --bg-blade:      #192f47;
+  --bg-input:      #0e1f30;
+  --border:        rgba(255,255,255,0.07);
+  --border-focus:  rgba(0,153,191,0.6);
+  --primary:       #007795;
+  --primary-light: #00a8cc;
+  --accent:        #00e5ff;
+  --text-primary:  #deedf5;
+  --text-secondary:#7fa8c0;
+  --text-muted:    #4a6578;
+  --success:       #43a047;
+  --warning:       #fb8c00;
+  --danger:        #e53935;
+  --info:          #039be5;
+  --blade-width:   540px;
+  --radius:        8px;
+  --radius-lg:     12px;
+}
+
+// ─── Base ──────────────────────────────────────────────────────────────────────
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  height: 100%; margin: 0; padding: 0;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,153,191,0.25); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,153,191,0.5); }
+
+// ─── Material Overrides ────────────────────────────────────────────────────────
+.mat-mdc-card {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+}
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  background: var(--bg-blade) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+}
+.mat-mdc-table {
+  background: transparent !important;
+  .mat-mdc-header-row { background: rgba(0,0,0,0.15); }
+  .mat-mdc-header-cell {
+    color: var(--text-muted) !important;
+    font-size: 10.5px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.09em;
+    border-bottom: 1px solid var(--border) !important;
+  }
+  .mat-mdc-row {
+    background: transparent;
+    border-bottom: 1px solid var(--border) !important;
+    transition: background 0.15s;
+    cursor: pointer;
+    &:hover { background: rgba(0,153,191,0.07) !important; }
+    &:last-child { border-bottom: none !important; }
+  }
+  .mat-mdc-cell { color: var(--text-primary) !important; border-bottom: none !important; font-size: 13px; }
+}
+.mat-mdc-paginator { background: transparent !important; color: var(--text-secondary) !important; border-top: 1px solid var(--border); }
+.mat-mdc-form-field .mdc-text-field { background: var(--bg-input) !important; }
+.mat-mdc-select-panel {
+  background: #1d3b57 !important;
+  border: 1px solid var(--border-focus) !important;
+  border-radius: var(--radius) !important;
+  .mat-mdc-option:hover { background: rgba(0,153,191,0.12) !important; }
+  .mdc-list-item--selected { background: rgba(0,153,191,0.18) !important; }
+}
+.mat-mdc-tab-group {
+  .mat-mdc-tab-header { border-bottom: 1px solid var(--border); background: transparent; }
+  .mat-mdc-tab { min-width: 120px; }
+  .mat-mdc-tab .mdc-tab__text-label { color: var(--text-secondary) !important; font-size: 13px; font-weight: 500; }
+  .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label { color: var(--primary-light) !important; }
+  .mdc-tab-indicator__content--underline { border-color: var(--primary-light) !important; border-width: 2px !important; }
+}
+.mat-mdc-snack-bar-container {
+  &.snack-success .mdc-snackbar__surface { background: #1b5e20 !important; border: 1px solid #2e7d32 !important; }
+  &.snack-error   .mdc-snackbar__surface { background: #7f0000 !important; border: 1px solid #b71c1c !important; }
+}
+.mat-sort-header-arrow { color: var(--primary-light) !important; }
+.mat-mdc-icon-button .mat-icon { color: var(--text-secondary); }
+
+// ─── Status Chips ─────────────────────────────────────────────────────────────
+.status-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em;
+  &.active    { background: rgba(67,160,71,0.15); color: #81c784; border: 1px solid rgba(67,160,71,0.3); }
+  &.inactive  { background: rgba(229,57,53,0.15); color: #ef9a9a; border: 1px solid rgba(229,57,53,0.3); }
+  &.pending   { background: rgba(251,140,0,0.15); color: #ffb74d; border: 1px solid rgba(251,140,0,0.3); }
+  &.executed  { background: rgba(0,153,191,0.15); color: #4dd0e1; border: 1px solid rgba(0,153,191,0.3); }
+  &.expired   { background: rgba(158,158,158,0.15); color: #bdbdbd; border: 1px solid rgba(158,158,158,0.3); }
+  &::before   { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+}
+
+// ─── Blade Animations ─────────────────────────────────────────────────────────
+@keyframes slideInRight {
+  from { transform: translateX(30px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+
+// ─── Utility ──────────────────────────────────────────────────────────────────
+.text-muted     { color: var(--text-muted) !important; }
+.text-secondary { color: var(--text-secondary) !important; }
+.text-primary   { color: var(--primary-light) !important; }
+.text-sm        { font-size: 12px !important; }
+.font-semibold  { font-weight: 600 !important; }
+.truncate       { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.section-label {
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-muted);
+  margin-bottom: 12px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 16px; }
+.full-width { grid-column: 1 / -1; }

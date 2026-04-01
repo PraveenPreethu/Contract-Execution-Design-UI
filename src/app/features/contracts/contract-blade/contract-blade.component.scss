@@ -1,0 +1,94 @@
+.blade-body {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.blade-loading {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(25,47,71,0.7); z-index: 10;
+}
+
+.blade-tabs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  ::ng-deep .mat-mdc-tab-body-wrapper { flex: 1; overflow: hidden; }
+  ::ng-deep .mat-mdc-tab-body        { height: 100%; }
+  ::ng-deep .mat-mdc-tab-body-content{ height: 100%; overflow: auto; }
+}
+
+.tab-icon { font-size: 16px; width: 16px; height: 16px; margin-right: 6px; }
+
+.tab-count {
+  background: rgba(0,153,191,0.2);
+  color: var(--primary-light);
+  font-size: 11px; font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-left: 6px;
+}
+
+.tab-content {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.blade-form { display: flex; flex-direction: column; }
+
+.info-banner {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(0,153,191,0.08);
+  border: 1px solid rgba(0,153,191,0.2);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  mat-icon { color: var(--primary-light); font-size: 18px; }
+  .info-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+  .info-value { font-family: 'Courier New', monospace; font-size: 13px; font-weight: 600; color: var(--primary-light); }
+}
+
+.blade-actions {
+  display: flex; gap: 10px; justify-content: flex-end;
+  padding-top: 20px; margin-top: 8px;
+  border-top: 1px solid var(--border);
+  button { min-width: 120px; }
+}
+
+.btn-spinner { display: inline-block; margin-right: 6px; }
+
+// ── Inner table ────────────────────────────────────────────────────────────
+.section-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+  button { height: 34px; font-size: 12px !important; }
+}
+
+.inner-table { width: 100%; }
+
+.id-badge-sm {
+  font-family: 'Courier New', monospace;
+  font-size: 11px; color: var(--primary-light);
+  background: rgba(0,153,191,0.1);
+  padding: 1px 6px; border-radius: 3px;
+}
+
+.row-actions {
+  width: 80px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  .delete-icon mat-icon { color: var(--danger) !important; opacity: 0.7; }
+}
+.clickable-row:hover .row-actions { opacity: 1; }
+
+.mini-empty {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; padding: 32px;
+  color: var(--text-muted); font-size: 13px;
+  mat-icon { font-size: 20px; }
+}

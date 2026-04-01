@@ -1,0 +1,149 @@
+.contracts-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+// ── Page Header ──────────────────────────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 32px 20px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(0,119,149,0.08) 0%, transparent 60%);
+}
+.page-header-left  { display: flex; align-items: center; gap: 16px; }
+.page-header-right { display: flex; align-items: center; gap: 12px; }
+
+.page-icon {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  mat-icon { color: white; font-size: 24px; }
+}
+
+.page-title { margin: 0; font-size: 22px; font-weight: 700; color: var(--text-primary); }
+.page-sub   { margin: 2px 0 0; font-size: 13px; color: var(--text-muted); }
+
+.stat-pill {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 6px 16px; border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  .stat-value { font-size: 20px; font-weight: 700; color: var(--text-primary); line-height: 1; }
+  .stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+  &.active .stat-value { color: #81c784; }
+}
+
+.create-btn {
+  height: 38px;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  mat-icon { margin-right: 4px; }
+}
+
+// ── Toolbar ──────────────────────────────────────────────────────────────────
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 32px;
+  flex-shrink: 0;
+}
+
+.search-field {
+  flex: 1;
+  max-width: 380px;
+  .mat-mdc-form-field-subscript-wrapper { display: none; }
+}
+
+.status-filter {
+  width: 160px;
+  .mat-mdc-form-field-subscript-wrapper { display: none; }
+}
+
+.spacer { flex: 1; }
+
+.clear-btn {
+  color: var(--text-secondary) !important;
+  border-color: var(--border) !important;
+  height: 40px;
+}
+
+.refresh-btn mat-icon { color: var(--text-secondary); }
+
+// ── Table ────────────────────────────────────────────────────────────────────
+.table-container {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  padding: 0 32px;
+}
+
+.contracts-table { width: 100%; }
+
+.loading-overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px; background: rgba(11,24,38,0.7);
+  z-index: 10;
+  color: var(--text-secondary);
+}
+
+.id-badge {
+  font-family: 'Courier New', monospace;
+  font-size: 12px; font-weight: 600;
+  color: var(--primary-light);
+  background: rgba(0,153,191,0.1);
+  border: 1px solid rgba(0,153,191,0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.customer-cell {
+  display: flex; align-items: center; gap: 10px;
+}
+.customer-avatar {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: white;
+  flex-shrink: 0;
+}
+
+.commodity-tag {
+  font-size: 11px; font-weight: 600;
+  background: rgba(0,229,255,0.08);
+  color: #80deea;
+  border: 1px solid rgba(0,229,255,0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.date-cell { font-size: 12px; color: var(--text-secondary); }
+
+.actions-cell {
+  width: 88px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.data-row:hover .actions-cell { opacity: 1; }
+
+.delete-btn mat-icon { color: var(--danger) !important; opacity: 0.7; }
+.delete-btn:hover mat-icon { opacity: 1; }
+
+// ── Empty State ──────────────────────────────────────────────────────────────
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 64px 32px; gap: 8px;
+  mat-icon { font-size: 48px; width: 48px; height: 48px; color: var(--text-muted); }
+  p        { font-size: 16px; font-weight: 600; color: var(--text-secondary); margin: 8px 0 0; }
+  span     { font-size: 13px; color: var(--text-muted); }
+  button   { margin-top: 16px; }
+}
