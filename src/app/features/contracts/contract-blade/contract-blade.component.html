@@ -1,0 +1,183 @@
+<div class="blade-body">
+  @if (loading()) {
+    <div class="blade-loading">
+      <mat-spinner diameter="36"></mat-spinner>
+    </div>
+  }
+
+  <mat-tab-group animationDuration="200ms" class="blade-tabs">
+
+    <!-- ── Details Tab ─────────────────────────────────────────────────── -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">info</mat-icon> Details
+      </ng-template>
+
+      <div class="tab-content">
+        <form [formGroup]="form" class="blade-form">
+
+          @if (mode === 'edit' && contractId) {
+            <div class="info-banner">
+              <mat-icon>fingerprint</mat-icon>
+              <span class="info-label">Contract ID</span>
+              <span class="info-value">{{ contractId }}</span>
+            </div>
+          }
+
+          <!-- Row 1: Customer + Commodity -->
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Customer ID *</mat-label>
+              <input matInput formControlName="customerId" placeholder="e.g. CUST-001">
+              <mat-icon matSuffix>person</mat-icon>
+              @if (isInvalid('customerId')) {
+                <mat-error>Customer ID is required</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Commodity *</mat-label>
+              <mat-select formControlName="commodityCode">
+                @for (c of commodities(); track c.commodityCode) {
+                  <mat-option [value]="c.commodityCode">{{ c.commodityName }}</mat-option>
+                }
+              </mat-select>
+              @if (isInvalid('commodityCode')) {
+                <mat-error>Commodity is required</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <!-- Row 2: Status + Execution Date -->
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Contract Status *</mat-label>
+              <mat-select formControlName="contractStatus">
+                @for (s of statuses(); track s.statusCode) {
+                  <mat-option [value]="s.statusCode">{{ s.statusDescription }}</mat-option>
+                }
+              </mat-select>
+              @if (isInvalid('contractStatus')) {
+                <mat-error>Status is required</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Execution Date</mat-label>
+              <input matInput [matDatepicker]="execPicker" formControlName="executionDate">
+              <mat-datepicker-toggle matSuffix [for]="execPicker"></mat-datepicker-toggle>
+              <mat-datepicker #execPicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+
+          <!-- Row 3: Audit -->
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Created By</mat-label>
+              <input matInput formControlName="createdUser" placeholder="Username">
+              <mat-icon matSuffix>badge</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Last Updated By</mat-label>
+              <input matInput formControlName="lastUpdateUser" placeholder="Username">
+              <mat-icon matSuffix>update</mat-icon>
+            </mat-form-field>
+          </div>
+
+        </form>
+
+        <!-- Save Actions -->
+        <div class="blade-actions">
+          <button mat-stroked-button (click)="form.reset()" [disabled]="saving()">
+            <mat-icon>undo</mat-icon> Reset
+          </button>
+          <button mat-flat-button color="primary" (click)="save()" [disabled]="saving()">
+            @if (saving()) { <mat-spinner diameter="16" class="btn-spinner"></mat-spinner> }
+            @else { <mat-icon>save</mat-icon> }
+            {{ mode === 'create' ? 'Create Contract' : 'Save Changes' }}
+          </button>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- ── Commitments Tab ─────────────────────────────────────────────── -->
+    @if (mode === 'edit') {
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">handshake</mat-icon>
+          Commitments
+          <span class="tab-count">{{ commitments().length }}</span>
+        </ng-template>
+
+        <div class="tab-content">
+          <div class="section-bar">
+            <span class="section-label" style="margin:0">Commitments</span>
+            <button mat-flat-button color="primary" size="small" (click)="openCreateCommitment()">
+              <mat-icon>add</mat-icon> Add Commitment
+            </button>
+          </div>
+
+          <table mat-table [dataSource]="commitments()" class="inner-table">
+
+            <ng-container matColumnDef="commitmentId">
+              <th mat-header-cell *matHeaderCellDef>ID</th>
+              <td mat-cell *matCellDef="let r"><span class="id-badge-sm">{{ r.commitmentId }}</span></td>
+            </ng-container>
+
+            <ng-container matColumnDef="productCode">
+              <th mat-header-cell *matHeaderCellDef>Product</th>
+              <td mat-cell *matCellDef="let r">{{ r.productCode || '—' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="marketCode">
+              <th mat-header-cell *matHeaderCellDef>Market</th>
+              <td mat-cell *matCellDef="let r">{{ r.marketCode || '—' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="deliveryStart">
+              <th mat-header-cell *matHeaderCellDef>Delivery Start</th>
+              <td mat-cell *matCellDef="let r" class="text-sm text-secondary">
+                {{ r.deliveryStart | date:'MMM d, y' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="deliveryEnd">
+              <th mat-header-cell *matHeaderCellDef>Delivery End</th>
+              <td mat-cell *matCellDef="let r" class="text-sm text-secondary">
+                {{ r.deliveryEnd | date:'MMM d, y' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let r" class="row-actions" (click)="$event.stopPropagation()">
+                <button mat-icon-button matTooltip="Edit" (click)="openEditCommitment(r); $event.stopPropagation()">
+                  <mat-icon>chevron_right</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Delete" class="delete-icon"
+                        (click)="confirmDeleteCommitment(r, $event)">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="commitmentColumns"></tr>
+            <tr mat-row *matRowDef="let r; columns: commitmentColumns;"
+                (click)="openEditCommitment(r)" class="clickable-row"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+              <td [attr.colspan]="commitmentColumns.length">
+                <div class="mini-empty">
+                  <mat-icon>handshake</mat-icon>
+                  <span>No commitments yet</span>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </mat-tab>
+    }
+
+  </mat-tab-group>
+</div>

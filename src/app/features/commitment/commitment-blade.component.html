@@ -1,0 +1,247 @@
+<div class="blade-body">
+  @if (loading()) {
+    <div class="blade-loading"><mat-spinner diameter="36"></mat-spinner></div>
+  }
+
+  <mat-tab-group animationDuration="200ms" class="blade-tabs">
+
+    <!-- ── Details ─────────────────────────────────────────────────────── -->
+    <mat-tab>
+      <ng-template mat-tab-label><mat-icon class="tab-icon">info</mat-icon> Details</ng-template>
+
+      <div class="tab-content">
+        <form [formGroup]="form" class="blade-form">
+
+          @if (contractId) {
+            <div class="context-banner">
+              <mat-icon>description</mat-icon>
+              <span class="ctx-label">Contract</span>
+              <span class="ctx-value">{{ contractId }}</span>
+            </div>
+          }
+
+          <!-- Product + Market -->
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Product *</mat-label>
+              <mat-select formControlName="productCode">
+                @for (p of products(); track p.productCode) {
+                  <mat-option [value]="p.productCode">{{ p.productName }}</mat-option>
+                }
+              </mat-select>
+              @if (isInvalid('productCode')) { <mat-error>Product is required</mat-error> }
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Market *</mat-label>
+              <mat-select formControlName="marketCode">
+                @for (m of markets(); track m.marketCode) {
+                  <mat-option [value]="m.marketCode">{{ m.marketName }}</mat-option>
+                }
+              </mat-select>
+              @if (isInvalid('marketCode')) { <mat-error>Market is required</mat-error> }
+            </mat-form-field>
+          </div>
+
+          <!-- Delivery Start + End -->
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Delivery Start *</mat-label>
+              <input matInput [matDatepicker]="startPicker" formControlName="deliveryStart">
+              <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+              <mat-datepicker #startPicker></mat-datepicker>
+              @if (isInvalid('deliveryStart')) { <mat-error>Start date required</mat-error> }
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Delivery End *</mat-label>
+              <input matInput [matDatepicker]="endPicker" formControlName="deliveryEnd">
+              <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+              <mat-datepicker #endPicker></mat-datepicker>
+              @if (isInvalid('deliveryEnd')) { <mat-error>End date required</mat-error> }
+            </mat-form-field>
+          </div>
+
+          <!-- Meter IDs -->
+          <div class="form-row full-width">
+            <mat-form-field appearance="fill" class="full-col">
+              <mat-label>Meter IDs</mat-label>
+              <mat-select formControlName="meterIds" multiple>
+                @for (m of meters(); track m.meterId) {
+                  <mat-option [value]="m.meterId">{{ m.meterName || m.meterId }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Volume fields -->
+          <div class="form-row-3">
+            <mat-form-field appearance="fill">
+              <mat-label>Volume</mat-label>
+              <input matInput type="number" formControlName="volume" min="0">
+              @if (isInvalid('volume')) { <mat-error>Must be ≥ 0</mat-error> }
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Volume Unit</mat-label>
+              <input matInput formControlName="volumeUnit" placeholder="e.g. MWh">
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Volume Frequency</mat-label>
+              <mat-select formControlName="volumeFrequency">
+                @for (f of volFreqs(); track f.frequencyCode) {
+                  <mat-option [value]="f.frequencyCode">{{ f.description }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Volume Constraint -->
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Volume Constraint</mat-label>
+              <mat-select formControlName="volumeConstraint">
+                @for (c of volConstraints(); track c.constraintCode) {
+                  <mat-option [value]="c.constraintCode">{{ c.description }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Last Updated By</mat-label>
+              <input matInput formControlName="lastUpdateUser">
+            </mat-form-field>
+          </div>
+
+        </form>
+
+        <div class="blade-actions">
+          <button mat-stroked-button (click)="form.reset()" [disabled]="saving()">
+            <mat-icon>undo</mat-icon> Reset
+          </button>
+          <button mat-flat-button color="primary" (click)="save()" [disabled]="saving()">
+            @if (saving()) { <mat-spinner diameter="16"></mat-spinner> }
+            @else { <mat-icon>save</mat-icon> }
+            {{ mode === 'create' ? 'Create Commitment' : 'Save Changes' }}
+          </button>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- ── Physical Pricing ─────────────────────────────────────────────── -->
+    @if (mode === 'edit') {
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">bolt</mat-icon>
+          Physical
+          <span class="tab-count">{{ physicals().length }}</span>
+        </ng-template>
+
+        <div class="tab-content">
+          <div class="section-bar">
+            <span class="section-label" style="margin:0">Physical Pricing (CC)</span>
+            <button mat-flat-button color="primary" (click)="openPhysical()">
+              <mat-icon>add</mat-icon> Add
+            </button>
+          </div>
+
+          <table mat-table [dataSource]="physicals()" class="inner-table">
+            <ng-container matColumnDef="pricingId">
+              <th mat-header-cell *matHeaderCellDef>Pricing ID</th>
+              <td mat-cell *matCellDef="let r"><span class="id-badge-sm">{{ r.pricingId }}</span></td>
+            </ng-container>
+            <ng-container matColumnDef="costComponent">
+              <th mat-header-cell *matHeaderCellDef>Cost Component</th>
+              <td mat-cell *matCellDef="let r">{{ r.costComponent || '—' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="cC_Level">
+              <th mat-header-cell *matHeaderCellDef>CC Level</th>
+              <td mat-cell *matCellDef="let r">{{ r.cC_Level || '—' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="pricingDays">
+              <th mat-header-cell *matHeaderCellDef>Pricing Days</th>
+              <td mat-cell *matCellDef="let r">{{ r.pricingDays || '—' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="fixedFloat">
+              <th mat-header-cell *matHeaderCellDef>Fixed/Float</th>
+              <td mat-cell *matCellDef="let r">
+                <span class="type-badge" [class.fixed]="r.fixedFloat?.toLowerCase() === 'fixed'">
+                  {{ r.fixedFloat || '—' }}
+                </span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let r" class="row-actions" (click)="$event.stopPropagation()">
+                <button mat-icon-button (click)="openPhysical(r); $event.stopPropagation()"><mat-icon>chevron_right</mat-icon></button>
+                <button mat-icon-button class="del-btn" (click)="confirmDeletePhysical(r, $event)"><mat-icon>delete_outline</mat-icon></button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="physCols"></tr>
+            <tr mat-row *matRowDef="let r; columns: physCols;" (click)="openPhysical(r)" class="clickable-row"></tr>
+            <tr class="mat-row" *matNoDataRow>
+              <td [attr.colspan]="physCols.length"><div class="mini-empty"><mat-icon>bolt</mat-icon><span>No physical pricing</span></div></td>
+            </tr>
+          </table>
+        </div>
+      </mat-tab>
+
+      <!-- ── Financial Pricing ───────────────────────────────────────────── -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">attach_money</mat-icon>
+          Financial
+          <span class="tab-count">{{ financials().length }}</span>
+        </ng-template>
+
+        <div class="tab-content">
+          <div class="section-bar">
+            <span class="section-label" style="margin:0">Financial Pricing (CC)</span>
+            <button mat-flat-button color="primary" (click)="openFinancial()">
+              <mat-icon>add</mat-icon> Add
+            </button>
+          </div>
+
+          <table mat-table [dataSource]="financials()" class="inner-table">
+            <ng-container matColumnDef="pricingId">
+              <th mat-header-cell *matHeaderCellDef>Pricing ID</th>
+              <td mat-cell *matCellDef="let r"><span class="id-badge-sm">{{ r.pricingId }}</span></td>
+            </ng-container>
+            <ng-container matColumnDef="costComponent">
+              <th mat-header-cell *matHeaderCellDef>Cost Component</th>
+              <td mat-cell *matCellDef="let r">{{ r.costComponent || '—' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="cC_Level">
+              <th mat-header-cell *matHeaderCellDef>CC Level</th>
+              <td mat-cell *matCellDef="let r">{{ r.cC_Level || '—' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="price">
+              <th mat-header-cell *matHeaderCellDef>Price</th>
+              <td mat-cell *matCellDef="let r" class="price-cell">{{ r.price | number:'1.4-4' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="fixedFloat">
+              <th mat-header-cell *matHeaderCellDef>Fixed/Float</th>
+              <td mat-cell *matCellDef="let r">
+                <span class="type-badge" [class.fixed]="r.fixedFloat?.toLowerCase() === 'fixed'">{{ r.fixedFloat || '—' }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let r" class="row-actions" (click)="$event.stopPropagation()">
+                <button mat-icon-button (click)="openFinancial(r); $event.stopPropagation()"><mat-icon>chevron_right</mat-icon></button>
+                <button mat-icon-button class="del-btn" (click)="confirmDeleteFinancial(r, $event)"><mat-icon>delete_outline</mat-icon></button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="finCols"></tr>
+            <tr mat-row *matRowDef="let r; columns: finCols;" (click)="openFinancial(r)" class="clickable-row"></tr>
+            <tr class="mat-row" *matNoDataRow>
+              <td [attr.colspan]="finCols.length"><div class="mini-empty"><mat-icon>attach_money</mat-icon><span>No financial pricing</span></div></td>
+            </tr>
+          </table>
+        </div>
+      </mat-tab>
+    }
+
+  </mat-tab-group>
+</div>

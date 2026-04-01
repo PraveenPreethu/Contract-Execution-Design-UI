@@ -1,0 +1,140 @@
+<div class="blade-body">
+  @if (loading()) { <div class="blade-loading"><mat-spinner diameter="36"></mat-spinner></div> }
+
+  <mat-tab-group animationDuration="200ms" class="blade-tabs">
+
+    <mat-tab>
+      <ng-template mat-tab-label><mat-icon class="tab-icon">bolt</mat-icon> Physical Pricing</ng-template>
+      <div class="tab-content">
+        <form [formGroup]="form" class="blade-form">
+
+          <div class="context-row">
+            @if (contractId) { <span class="ctx-chip"><mat-icon>description</mat-icon>{{ contractId }}</span> }
+            @if (commitmentId) { <span class="ctx-chip"><mat-icon>handshake</mat-icon>{{ commitmentId }}</span> }
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Cost Component *</mat-label>
+              <mat-select formControlName="costComponent">
+                @for (c of components(); track c.componentCode) {
+                  <mat-option [value]="c.componentCode">{{ c.description }}</mat-option>
+                }
+              </mat-select>
+              @if (isInvalid('costComponent')) { <mat-error>Required</mat-error> }
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>CC Level *</mat-label>
+              <input matInput formControlName="cC_Level" placeholder="e.g. 1">
+              @if (isInvalid('cC_Level')) { <mat-error>Required</mat-error> }
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Pricing Days *</mat-label>
+              <mat-select formControlName="pricingDays">
+                @for (d of pricingDays(); track d.pricingDaysCode) {
+                  <mat-option [value]="d.pricingDaysCode">{{ d.description }}</mat-option>
+                }
+              </mat-select>
+              @if (isInvalid('pricingDays')) { <mat-error>Required</mat-error> }
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Fixed / Float *</mat-label>
+              <mat-select formControlName="fixedFloat">
+                @for (f of fixedFloats(); track f.fixedFloatCode) {
+                  <mat-option [value]="f.fixedFloatCode">{{ f.description }}</mat-option>
+                }
+              </mat-select>
+              @if (isInvalid('fixedFloat')) { <mat-error>Required</mat-error> }
+            </mat-form-field>
+          </div>
+
+          <div class="form-row full-width">
+            <mat-form-field appearance="fill" class="full-col">
+              <mat-label>CC Formula</mat-label>
+              <input matInput formControlName="cC_Formula" placeholder="e.g. INDEX + 0.05">
+              <mat-icon matSuffix>functions</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Bundle ID</mat-label>
+              <input matInput formControlName="bundleId">
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Last Updated By</mat-label>
+              <input matInput formControlName="lastUpdateUser">
+            </mat-form-field>
+          </div>
+        </form>
+
+        <div class="blade-actions">
+          <button mat-stroked-button (click)="form.reset()" [disabled]="saving()"><mat-icon>undo</mat-icon> Reset</button>
+          <button mat-flat-button color="primary" (click)="save()" [disabled]="saving()">
+            @if (saving()) { <mat-spinner diameter="16"></mat-spinner> } @else { <mat-icon>save</mat-icon> }
+            {{ mode === 'create' ? 'Create Pricing' : 'Save Changes' }}
+          </button>
+        </div>
+      </div>
+    </mat-tab>
+
+    @if (mode === 'edit') {
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">table_chart</mat-icon> Details
+          <span class="tab-count">{{ details().length }}</span>
+        </ng-template>
+        <div class="tab-content">
+          <div class="section-bar">
+            <span class="section-label" style="margin:0">Detail Records</span>
+            <button mat-flat-button color="primary" (click)="openDetail()"><mat-icon>add</mat-icon> Add</button>
+          </div>
+
+          <table mat-table [dataSource]="details()" class="inner-table">
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef>#</th>
+              <td mat-cell *matCellDef="let r"><span class="id-num">{{ r.id }}</span></td>
+            </ng-container>
+            <ng-container matColumnDef="pricingDate">
+              <th mat-header-cell *matHeaderCellDef>Pricing Date</th>
+              <td mat-cell *matCellDef="let r" class="text-sm">{{ r.pricingDate | date:'MMM d, y' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="binStart">
+              <th mat-header-cell *matHeaderCellDef>Bin Start</th>
+              <td mat-cell *matCellDef="let r" class="text-sm text-secondary">{{ r.binStart | date:'MMM d, y HH:mm' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="binEnd">
+              <th mat-header-cell *matHeaderCellDef>Bin End</th>
+              <td mat-cell *matCellDef="let r" class="text-sm text-secondary">{{ r.binEnd | date:'MMM d, y HH:mm' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="productCode">
+              <th mat-header-cell *matHeaderCellDef>Product</th>
+              <td mat-cell *matCellDef="let r">{{ r.productCode || '—' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="price">
+              <th mat-header-cell *matHeaderCellDef>Price</th>
+              <td mat-cell *matCellDef="let r" class="price-cell">{{ r.price | number:'1.4-4' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let r" class="row-actions" (click)="$event.stopPropagation()">
+                <button mat-icon-button (click)="openDetail(r); $event.stopPropagation()"><mat-icon>chevron_right</mat-icon></button>
+                <button mat-icon-button class="del-btn" (click)="confirmDeleteDetail(r, $event)"><mat-icon>delete_outline</mat-icon></button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="detailCols"></tr>
+            <tr mat-row *matRowDef="let r; columns: detailCols;" (click)="openDetail(r)" class="clickable-row"></tr>
+            <tr class="mat-row" *matNoDataRow>
+              <td [attr.colspan]="detailCols.length"><div class="mini-empty"><mat-icon>table_chart</mat-icon><span>No detail records</span></div></td>
+            </tr>
+          </table>
+        </div>
+      </mat-tab>
+    }
+  </mat-tab-group>
+</div>

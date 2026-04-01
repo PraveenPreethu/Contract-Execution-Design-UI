@@ -1,0 +1,169 @@
+<div class="contracts-page">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-icon">
+        <mat-icon>description</mat-icon>
+      </div>
+      <div>
+        <h1 class="page-title">Contracts</h1>
+        <p class="page-sub">Manage contract execution records</p>
+      </div>
+    </div>
+    <div class="page-header-right">
+      <div class="stat-pill">
+        <span class="stat-value">{{ totalContracts }}</span>
+        <span class="stat-label">Total</span>
+      </div>
+      <div class="stat-pill active">
+        <span class="stat-value">{{ activeContracts }}</span>
+        <span class="stat-label">Active</span>
+      </div>
+      <button mat-flat-button color="primary" (click)="openCreate()" class="create-btn">
+        <mat-icon>add</mat-icon>
+        New Contract
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Toolbar ────────────────────────────────────────────────────────── -->
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Search by ID, customer, commodity…"
+             [(ngModel)]="filterText" (ngModelChange)="applyFilter()">
+      @if (filterText) {
+        <button matSuffix mat-icon-button (click)="filterText=''; applyFilter()">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="status-filter">
+      <mat-label>Status</mat-label>
+      <mat-select [(ngModel)]="filterStatus" (ngModelChange)="applyFilter()">
+        <mat-option value="">All</mat-option>
+        @for (s of statuses(); track s.statusCode) {
+          <mat-option [value]="s.statusCode.toLowerCase()">{{ s.statusDescription }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (filterText || filterStatus) {
+      <button mat-stroked-button (click)="clearFilter()" class="clear-btn">
+        <mat-icon>filter_alt_off</mat-icon> Clear
+      </button>
+    }
+
+    <span class="spacer"></span>
+
+    <button mat-icon-button (click)="loadContracts()" matTooltip="Refresh" class="refresh-btn">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  <!-- ── Table ──────────────────────────────────────────────────────────── -->
+  <div class="table-container">
+    @if (loading()) {
+      <div class="loading-overlay">
+        <mat-spinner diameter="40"></mat-spinner>
+        <span>Loading contracts…</span>
+      </div>
+    }
+
+    <table mat-table [dataSource]="dataSource" matSort class="contracts-table">
+
+      <!-- Contract ID -->
+      <ng-container matColumnDef="contractId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Contract ID</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="id-badge">{{ row.contractId }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Customer ID -->
+      <ng-container matColumnDef="customerId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer</th>
+        <td mat-cell *matCellDef="let row">
+          <div class="customer-cell">
+            <div class="customer-avatar">{{ (row.customerId || '?')[0] | uppercase }}</div>
+            <span>{{ row.customerId || '—' }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Commodity -->
+      <ng-container matColumnDef="commodityCode">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Commodity</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="commodity-tag">{{ row.commodityCode || '—' }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Status -->
+      <ng-container matColumnDef="contractStatus">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="status-chip {{ getStatusClass(row.contractStatus) }}">
+            {{ row.contractStatus || 'Unknown' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Execution Date -->
+      <ng-container matColumnDef="executionDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Execution Date</th>
+        <td mat-cell *matCellDef="let row" class="date-cell">
+          {{ row.executionDate ? (row.executionDate | date:'MMM d, y') : '—' }}
+        </td>
+      </ng-container>
+
+      <!-- Created At -->
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Created</th>
+        <td mat-cell *matCellDef="let row" class="date-cell text-secondary text-sm">
+          {{ row.createdAt | date:'MMM d, y' }}
+        </td>
+      </ng-container>
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row" class="actions-cell" (click)="$event.stopPropagation()">
+          <button mat-icon-button matTooltip="Edit" (click)="openEdit(row); $event.stopPropagation()">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Delete" class="delete-btn"
+                  (click)="confirmDelete(row, $event)">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+          (click)="openEdit(row)" class="data-row"></tr>
+
+      <!-- Empty State -->
+      <tr class="mat-row" *matNoDataRow>
+        <td [attr.colspan]="displayedColumns.length">
+          <div class="empty-state">
+            <mat-icon>description</mat-icon>
+            <p>No contracts found</p>
+            <span>{{ filterText || filterStatus ? 'Try adjusting your filters' : 'Create your first contract to get started' }}</span>
+            @if (!filterText && !filterStatus) {
+              <button mat-flat-button color="primary" (click)="openCreate()">
+                <mat-icon>add</mat-icon> New Contract
+              </button>
+            }
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ── Paginator ──────────────────────────────────────────────────────── -->
+  <mat-paginator [pageSizeOptions]="[10, 25, 50]" pageSize="25" showFirstLastButtons></mat-paginator>
+
+</div>

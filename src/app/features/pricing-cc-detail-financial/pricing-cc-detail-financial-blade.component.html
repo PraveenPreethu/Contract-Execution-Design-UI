@@ -1,0 +1,123 @@
+<div class="blade-body">
+  @if (loading()) { <div class="blade-loading"><mat-spinner diameter="36"></mat-spinner></div> }
+
+  <mat-tab-group animationDuration="200ms" class="blade-tabs">
+    <mat-tab>
+      <ng-template mat-tab-label><mat-icon class="tab-icon">attach_money</mat-icon> Financial Detail</ng-template>
+      <div class="tab-content">
+        <form [formGroup]="form" class="blade-form">
+          <div class="context-row">
+            @if (contractId) { <span class="ctx-chip"><mat-icon>description</mat-icon>{{ contractId }}</span> }
+            @if (pricingId)  { <span class="ctx-chip"><mat-icon>attach_money</mat-icon>{{ pricingId }}</span> }
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Pricing Date *</mat-label>
+              <input matInput [matDatepicker]="pd2" formControlName="pricingDate">
+              <mat-datepicker-toggle matSuffix [for]="pd2"></mat-datepicker-toggle>
+              <mat-datepicker #pd2></mat-datepicker>
+              @if (isInvalid('pricingDate')) { <mat-error>Required</mat-error> }
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>As-Of Date *</mat-label>
+              <input matInput [matDatepicker]="ao2" formControlName="asOfDate">
+              <mat-datepicker-toggle matSuffix [for]="ao2"></mat-datepicker-toggle>
+              <mat-datepicker #ao2></mat-datepicker>
+              @if (isInvalid('asOfDate')) { <mat-error>Required</mat-error> }
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Bin Start *</mat-label>
+              <input matInput [matDatepicker]="bs2" formControlName="binStart">
+              <mat-datepicker-toggle matSuffix [for]="bs2"></mat-datepicker-toggle>
+              <mat-datepicker #bs2></mat-datepicker>
+              @if (isInvalid('binStart')) { <mat-error>Required</mat-error> }
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Bin End *</mat-label>
+              <input matInput [matDatepicker]="be2" formControlName="binEnd">
+              <mat-datepicker-toggle matSuffix [for]="be2"></mat-datepicker-toggle>
+              <mat-datepicker #be2></mat-datepicker>
+              @if (isInvalid('binEnd')) { <mat-error>Required</mat-error> }
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Product *</mat-label>
+              <mat-select formControlName="productCode">
+                @for (p of products(); track p.productCode) { <mat-option [value]="p.productCode">{{ p.productName }}</mat-option> }
+              </mat-select>
+              @if (isInvalid('productCode')) { <mat-error>Required</mat-error> }
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Fixed / Float *</mat-label>
+              <mat-select formControlName="fixedFloat">
+                @for (f of fixedFloats(); track f.fixedFloatCode) { <mat-option [value]="f.fixedFloatCode">{{ f.description }}</mat-option> }
+              </mat-select>
+              @if (isInvalid('fixedFloat')) { <mat-error>Required</mat-error> }
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Price *</mat-label>
+              <input matInput type="number" formControlName="price" step="0.0001">
+              <mat-icon matSuffix>paid</mat-icon>
+              @if (isInvalid('price')) { <mat-error>Required</mat-error> }
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Run ID</mat-label>
+              <input matInput formControlName="runId">
+            </mat-form-field>
+          </div>
+        </form>
+
+        <div class="blade-actions">
+          <button mat-stroked-button (click)="form.reset()" [disabled]="saving()"><mat-icon>undo</mat-icon> Reset</button>
+          <button mat-flat-button color="primary" (click)="save()" [disabled]="saving()">
+            @if (saving()) { <mat-spinner diameter="16"></mat-spinner> } @else { <mat-icon>save</mat-icon> }
+            {{ mode === 'create' ? 'Create' : 'Save Changes' }}
+          </button>
+        </div>
+      </div>
+    </mat-tab>
+
+    @if (mode === 'edit') {
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">delta</mat-icon> Deltas
+          <span class="tab-count">{{ deltas().length }}</span>
+        </ng-template>
+        <div class="tab-content">
+          <div class="section-bar">
+            <span class="section-label" style="margin:0">Financial Delta Records</span>
+            <button mat-flat-button color="primary" (click)="openDelta()"><mat-icon>add</mat-icon> Add</button>
+          </div>
+          <table mat-table [dataSource]="deltas()" class="inner-table">
+            <ng-container matColumnDef="id"><th mat-header-cell *matHeaderCellDef>#</th><td mat-cell *matCellDef="let r"><span class="id-num">{{ r.id }}</span></td></ng-container>
+            <ng-container matColumnDef="pricingDate"><th mat-header-cell *matHeaderCellDef>Date</th><td mat-cell *matCellDef="let r" class="text-sm">{{ r.pricingDate | date:'MMM d, y' }}</td></ng-container>
+            <ng-container matColumnDef="price"><th mat-header-cell *matHeaderCellDef>Price</th><td mat-cell *matCellDef="let r" class="price-cell">{{ r.price | number:'1.4-4' }}</td></ng-container>
+            <ng-container matColumnDef="fixedFloat"><th mat-header-cell *matHeaderCellDef>F/F</th><td mat-cell *matCellDef="let r"><span class="type-badge">{{ r.fixedFloat || '—' }}</span></td></ng-container>
+            <ng-container matColumnDef="curveBumped"><th mat-header-cell *matHeaderCellDef>Curve</th><td mat-cell *matCellDef="let r">{{ r.curveBumped || '—' }}</td></ng-container>
+            <ng-container matColumnDef="bumpedPrice"><th mat-header-cell *matHeaderCellDef>Bumped</th><td mat-cell *matCellDef="let r" class="price-cell">{{ r.bumpedPrice | number:'1.4-4' }}</td></ng-container>
+            <ng-container matColumnDef="delta"><th mat-header-cell *matHeaderCellDef>Delta</th><td mat-cell *matCellDef="let r" [class.delta-pos]="r.delta > 0" [class.delta-neg]="r.delta < 0" class="price-cell">{{ r.delta | number:'1.6-6' }}</td></ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let r" class="row-actions" (click)="$event.stopPropagation()">
+                <button mat-icon-button (click)="openDelta(r); $event.stopPropagation()"><mat-icon>chevron_right</mat-icon></button>
+                <button mat-icon-button class="del-btn" (click)="confirmDeleteDelta(r, $event)"><mat-icon>delete_outline</mat-icon></button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="deltaCols"></tr>
+            <tr mat-row *matRowDef="let r; columns: deltaCols;" (click)="openDelta(r)" class="clickable-row"></tr>
+            <tr class="mat-row" *matNoDataRow><td [attr.colspan]="deltaCols.length"><div class="mini-empty"><mat-icon>delta</mat-icon><span>No delta records</span></div></td></tr>
+          </table>
+        </div>
+      </mat-tab>
+    }
+  </mat-tab-group>
+</div>
