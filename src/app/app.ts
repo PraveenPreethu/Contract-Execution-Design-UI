@@ -53,7 +53,7 @@ import { BladeHostComponent } from './shared/components/blade-host/blade-host.co
 
     /* ── Sidebar ── */
     .sidebar {
-      width: 220px;
+      width: 196px;
       flex-shrink: 0;
       background: var(--bg-surface);
       border-right: 1px solid var(--border);
@@ -65,24 +65,24 @@ import { BladeHostComponent } from './shared/components/blade-host/blade-host.co
     .sidebar-logo {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 20px 16px 16px;
+      gap: 10px;
+      padding: 14px 14px 12px;
       border-bottom: 1px solid var(--border);
     }
 
     .logo-icon {
-      width: 36px;
-      height: 36px;
+      width: 30px;
+      height: 30px;
       background: linear-gradient(135deg, #007795, #00a8cc);
-      border-radius: 10px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      mat-icon { color: white; font-size: 20px; }
+      mat-icon { color: white; font-size: 17px; }
     }
 
     .logo-text {
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--text-primary);
       letter-spacing: -0.01em;
@@ -90,7 +90,7 @@ import { BladeHostComponent } from './shared/components/blade-host/blade-host.co
 
     .sidebar-links {
       flex: 1;
-      padding: 12px 8px;
+      padding: 8px 6px;
       display: flex;
       flex-direction: column;
       gap: 2px;
@@ -99,24 +99,24 @@ import { BladeHostComponent } from './shared/components/blade-host/blade-host.co
     .nav-link {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 9px 12px;
+      gap: 8px;
+      padding: 7px 10px;
       border-radius: var(--radius);
       color: var(--text-secondary);
       text-decoration: none;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 500;
       transition: all 0.15s;
       cursor: pointer;
 
-      mat-icon { font-size: 18px; width: 18px; height: 18px; }
+      mat-icon { font-size: 17px; width: 17px; height: 17px; }
 
       &:hover  { background: rgba(0,153,191,0.08); color: var(--text-primary); }
       &.active { background: rgba(0,153,191,0.15); color: var(--primary-light); }
     }
 
     .sidebar-footer {
-      padding: 12px 16px;
+      padding: 10px 14px;
       border-top: 1px solid var(--border);
     }
 

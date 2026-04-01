@@ -80,24 +80,27 @@ html, body {
 }
 .mat-mdc-table {
   background: transparent !important;
-  .mat-mdc-header-row { background: rgba(0,0,0,0.15); }
+  .mat-mdc-header-row { background: rgba(0,0,0,0.15); height: 38px !important; }
   .mat-mdc-header-cell {
     color: var(--text-muted) !important;
-    font-size: 10.5px; font-weight: 600;
+    font-size: 10px; font-weight: 600;
     text-transform: uppercase; letter-spacing: 0.09em;
     border-bottom: 1px solid var(--border) !important;
+    padding: 0 10px !important;
   }
   .mat-mdc-row {
     background: transparent;
+    height: 42px !important;
     border-bottom: 1px solid var(--border) !important;
     transition: background 0.15s;
     cursor: pointer;
     &:hover { background: rgba(0,153,191,0.07) !important; }
     &:last-child { border-bottom: none !important; }
   }
-  .mat-mdc-cell { color: var(--text-primary) !important; border-bottom: none !important; font-size: 13px; }
+  .mat-mdc-cell { color: var(--text-primary) !important; border-bottom: none !important; font-size: 12.5px; padding: 0 10px !important; }
 }
-.mat-mdc-paginator { background: transparent !important; color: var(--text-secondary) !important; border-top: 1px solid var(--border); }
+.mat-mdc-paginator { background: transparent !important; color: var(--text-secondary) !important; border-top: 1px solid var(--border); font-size: 12px !important; }
+.mat-mdc-paginator-container { min-height: 44px !important; padding: 0 12px !important; }
 .mat-mdc-form-field .mdc-text-field { background: var(--bg-input) !important; }
 .mat-mdc-select-panel {
   background: #1d3b57 !important;
@@ -108,8 +111,8 @@ html, body {
 }
 .mat-mdc-tab-group {
   .mat-mdc-tab-header { border-bottom: 1px solid var(--border); background: transparent; }
-  .mat-mdc-tab { min-width: 120px; }
-  .mat-mdc-tab .mdc-tab__text-label { color: var(--text-secondary) !important; font-size: 13px; font-weight: 500; }
+  .mat-mdc-tab { min-width: 100px; height: 40px !important; }
+  .mat-mdc-tab .mdc-tab__text-label { color: var(--text-secondary) !important; font-size: 12.5px; font-weight: 500; }
   .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label { color: var(--primary-light) !important; }
   .mdc-tab-indicator__content--underline { border-color: var(--primary-light) !important; border-width: 2px !important; }
 }
@@ -150,11 +153,11 @@ html, body {
 .font-semibold  { font-weight: 600 !important; }
 .truncate       { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .section-label {
-  font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.1em; color: var(--text-muted);
-  margin-bottom: 12px; padding-bottom: 6px;
+  margin-bottom: 8px; padding-bottom: 5px;
   border-bottom: 1px solid var(--border);
 }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
-.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 16px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 12px; }
 .full-width { grid-column: 1 / -1; }
