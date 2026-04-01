@@ -80,9 +80,14 @@ export class CommitmentBladeComponent implements OnInit {
     }
   }
 
+  private generateId(prefix: string): string {
+    const ts = Date.now().toString().slice(-7);
+    return `${prefix}-${ts}`;
+  }
+
   buildForm(): void {
     this.form = this.fb.group({
-      commitmentId:    [{ value: null, disabled: this.mode === 'edit' }],
+      commitmentId:    [{ value: this.mode === 'create' ? this.generateId('CMT') : null, disabled: this.mode === 'edit' }],
       contractId:      [{ value: this.contractId || null, disabled: true }],
       productCode:     [null, Validators.required],
       marketCode:      [null, Validators.required],

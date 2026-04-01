@@ -67,9 +67,14 @@ export class PricingCcPhysicalBladeComponent implements OnInit {
     }
   }
 
+  private generateId(prefix: string): string {
+    const ts = Date.now().toString().slice(-7);
+    return `${prefix}-${ts}`;
+  }
+
   buildForm(): void {
     this.form = this.fb.group({
-      pricingId:     [{ value: null, disabled: this.mode === 'edit' }],
+      pricingId:     [{ value: this.mode === 'create' ? this.generateId('PRP') : null, disabled: this.mode === 'edit' }],
       contractId:    [{ value: this.contractId || null, disabled: true }],
       commitmentId:  [{ value: this.commitmentId || null, disabled: true }],
       bundleId:      [null],
