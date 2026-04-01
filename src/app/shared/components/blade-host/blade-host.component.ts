@@ -83,7 +83,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     }
     .blade-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 8px 0 16px; min-height: 56px;
+      padding: 0 6px 0 14px; min-height: 46px;
       border-bottom: 1px solid var(--border);
       background: rgba(0,0,0,0.2);
       flex-shrink: 0;
